@@ -6,6 +6,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"net"
+	"reflect"
 	"time"
 )
 
@@ -29,7 +30,7 @@ func measureRtt() {
 		}(conn)
 
 		// encode message
-		xorEncode(msg)
+		msg = XOREncode(msg)
 
 		// send message and measure round-trip time
 		start := time.Now().UnixNano()
@@ -47,7 +48,7 @@ func measureRtt() {
 		end := time.Now().UnixNano()
 
 		// decode reply
-		xorDecode(reply)
+		reply = XORDecode(reply)
 
 		// validate reply
 		if !bytes.Equal(msg, reply) {
@@ -85,7 +86,7 @@ func measureThroughput(msgSize int, numMsgs int) (float64, error) {
 	binary.LittleEndian.PutUint64(ack, 1)
 
 	// encode message
-	msg = xorEncode(msg)
+	msg = XOREncode(msg)
 
 	// send messages and measure throughput
 	start := time.Now().UnixNano()
@@ -125,17 +126,48 @@ func startThroughPutMeasurement() {
 	}
 }
 
-func xorEncode(msg []byte) []byte {
-	key := uint64(0x1234567890ABCDEF)
-	for i := 0; i < len(msg); i += 8 {
-		block := msg[i : i+8]
-		value := key ^ binary.LittleEndian.Uint64(block)
-		binary.LittleEndian.PutUint64(block, value)
+func XOREncode(data []byte) []byte {
+	var result []byte
+	for i := 0; i < len(data); i += 8 {
+		var block uint64
+		for j := i; j < i+8 && j < len(data); j++ {
+			block |= uint64(data[j]) << ((j - i) * 8)
+		}
+		for j := 0; j < 8; j++ {
+			result = append(result, byte((block>>(j*8))&0xff))
+		}
 	}
-
-	return msg
+	for i := 8; i < len(result); i += 8 {
+		for j := 0; j < 8; j++ {
+			result[i+j] ^= result[i+j-8]
+		}
+	}
+	return result
 }
 
-func xorDecode(msg []byte) []byte {
-	return xorEncode(msg)
+func XORDecode(data []byte) []byte {
+	var result []byte
+	for i := len(data) - 8; i >= 0; i -= 8 {
+		var block uint64
+		for j := 0; j < 8; j++ {
+			block |= uint64(data[i+j]) << (j * 8)
+		}
+		for j := 0; j < 8; j++ {
+			result = append(result, byte((block>>(j*8))&0xff))
+		}
+		for j := 0; j < 8 && i+j-8 >= 0; j++ {
+			result[i+j-8] ^= result[i+j]
+		}
+	}
+	return result
+}
+
+func AssertEqual(data []byte) {
+	encoded := XOREncode(data)
+	decoded := XORDecode(encoded)
+	if !reflect.DeepEqual(data, decoded) {
+		fmt.Printf("Assertion Error: expected %v but got %v", data, decoded)
+	} else {
+		fmt.Println("Assertion Passed!")
+	}
 }

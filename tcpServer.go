@@ -26,9 +26,10 @@ func handleConnection(conn net.Conn) {
 
 		// decode message
 		msg := buf[:n]
-		msg = xorDecode(msg)
-		fmt.Println(msg)
+		msg = XORDecode(msg)
+		msg = XOREncode(msg)
 
+		fmt.Printf("Received message from %s: %s\n", conn.RemoteAddr(), msg)
 		// echo message back to client
 		_, err = conn.Write(msg)
 		if err != nil {

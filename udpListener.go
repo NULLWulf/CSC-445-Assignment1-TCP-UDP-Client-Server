@@ -5,47 +5,6 @@ import (
 	"net"
 )
 
-//func measureThroughputUDP(addr string, msgSize int, numMsgs int) (float64, error) {
-//	conn, err := net.Dial("udp", addr)
-//	if err != nil {
-//		return 0, fmt.Errorf("error connecting to server: %s", err)
-//	}
-//	defer func(conn net.Conn) {
-//		err := conn.Close()
-//		if err != nil {
-//
-//		}
-//	}(conn)
-//
-//	// create message and acknowledgement
-//	msg := make([]byte, msgSize)
-//	ack := make([]byte, 8)
-//	binary.LittleEndian.PutUint64(ack, 1)
-//
-//	// encode message
-//	xorEncode(msg)
-//
-//	// send messages and measure throughput
-//	start := time.Now()
-//	for i := 0; i < numMsgs; i++ {
-//		_, err = conn.Write(msg)
-//		if err != nil {
-//			return 0, fmt.Errorf("error sending message: %s", err)
-//		}
-//		_, err = conn.Read(ack)
-//		if err != nil {
-//			return 0, fmt.Errorf("error receiving acknowledgement: %s", err)
-//		}
-//	}
-//	elapsed := time.Since(start)
-//
-//	// calculate throughput
-//	totalBytes := float64(msgSize * numMsgs)
-//	throughput := totalBytes / elapsed.Seconds() * 8
-//
-//	return throughput, nil
-//}
-
 func handleConnectionUDP(conn *net.UDPConn) {
 	// create message buffer
 	buf := make([]byte, 1024)
@@ -60,7 +19,9 @@ func handleConnectionUDP(conn *net.UDPConn) {
 
 		// decode message
 		msg := buf[:n]
-		xorDecode(msg)
+		msg = XORDecode(msg)
+		msg = XOREncode(msg)
+
 		fmt.Printf("Received message from %s: %s\n", raddr, msg)
 		// send acknowledgement
 		_, err = conn.WriteToUDP([]byte("ACK"), raddr)
