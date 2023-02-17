@@ -26,7 +26,8 @@ func handleConnection(conn net.Conn) {
 
 		// decode message
 		msg := buf[:n]
-		xorDecode(msg)
+		msg = xorDecode(msg)
+		fmt.Println(msg)
 
 		// echo message back to client
 		_, err = conn.Write(msg)
@@ -38,8 +39,9 @@ func handleConnection(conn net.Conn) {
 }
 
 func tcpServer() {
-	addr := "localhost:12530"
-	ln, err := net.Listen("tcp", addr)
+	addr := &net.TCPAddr{IP: net.IPv4zero, Port: Port}
+	ln, err := net.ListenTCP("tcp", addr)
+
 	if err != nil {
 		fmt.Println("Error listening:", err)
 		return
@@ -47,11 +49,11 @@ func tcpServer() {
 	defer func(ln net.Listener) {
 		err := ln.Close()
 		if err != nil {
-
+			fmt.Println("Error closing the listener: ", err)
 		}
 	}(ln)
 
-	fmt.Printf("Server listening on:%s\n", addr)
+	fmt.Printf("Server listening on: %s\n", addr)
 
 	for {
 		conn, err := ln.Accept()

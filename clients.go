@@ -2,19 +2,21 @@ package main
 
 import (
 	"bytes"
+	"crypto/rand"
 	"encoding/binary"
 	"fmt"
 	"net"
 	"time"
 )
 
-func measureRtt(addr string) {
+func measureRtt() {
 	sizes := []int{8, 32, 512, 1024}
 	rttResults := make(map[int]time.Duration)
 
 	for _, size := range sizes {
 		msg := make([]byte, size)
-		conn, err := net.Dial("tcp", addr)
+		conn, err := net.Dial(Protocol, Address)
+
 		if err != nil {
 			fmt.Println("Error connecting to server:", err)
 			return
@@ -64,8 +66,8 @@ func measureRtt(addr string) {
 
 }
 
-func measureThroughputTCP(addr string, msgSize int, numMsgs int) (float64, error) {
-	conn, err := net.Dial("tcp", addr)
+func measureThroughput(msgSize int, numMsgs int) (float64, error) {
+	conn, err := net.Dial(Protocol, Address)
 	if err != nil {
 		return 0, fmt.Errorf("error connecting to server: %s", err)
 	}
@@ -78,11 +80,12 @@ func measureThroughputTCP(addr string, msgSize int, numMsgs int) (float64, error
 
 	// create message and acknowledgement
 	msg := make([]byte, msgSize)
+	_, err = rand.Read(msg)
 	ack := make([]byte, 8)
 	binary.LittleEndian.PutUint64(ack, 1)
 
 	// encode message
-	xorEncode(msg)
+	msg = xorEncode(msg)
 
 	// send messages and measure throughput
 	start := time.Now().UnixNano()
@@ -106,22 +109,13 @@ func measureThroughputTCP(addr string, msgSize int, numMsgs int) (float64, error
 	return throughput, nil
 }
 
-func startThroughPutMeasurement(addr string, udp bool) {
+func startThroughPutMeasurement() {
 	msgSizes := []int{1024, 512, 128}
 	numMsgs := []int{1024, 2048, 8192}
 
 	for _, size := range msgSizes {
 		for _, num := range numMsgs {
-
-			var throughput float64
-			err := error(nil)
-			if udp {
-				throughput, err = measureThroughputTCP(addr, size, num)
-
-			} else {
-				throughput, err = measureThroughputUDP(addr, size, num)
-			}
-
+			throughput, err := measureThroughput(size, num)
 			if err != nil {
 				fmt.Println(err)
 				continue
@@ -131,15 +125,17 @@ func startThroughPutMeasurement(addr string, udp bool) {
 	}
 }
 
-func xorEncode(msg []byte) {
+func xorEncode(msg []byte) []byte {
 	key := uint64(0x1234567890ABCDEF)
 	for i := 0; i < len(msg); i += 8 {
 		block := msg[i : i+8]
 		value := key ^ binary.LittleEndian.Uint64(block)
 		binary.LittleEndian.PutUint64(block, value)
 	}
+
+	return msg
 }
 
-func xorDecode(msg []byte) {
-	xorEncode(msg)
+func xorDecode(msg []byte) []byte {
+	return xorEncode(msg)
 }
