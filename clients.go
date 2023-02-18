@@ -85,7 +85,6 @@ func measureThroughput(msgSize int, numMsgs int) (float64, error) {
 	ack := make([]byte, 8)
 	binary.LittleEndian.PutUint64(ack, 1)
 
-	// encode message
 	msg = XOREncode(msg)
 
 	// send messages and measure throughput
@@ -126,6 +125,16 @@ func startThroughPutMeasurement() {
 	}
 }
 
+func AssertEqual(data []byte) {
+	encoded := XOREncode(data)
+	decoded := XORDecode(encoded)
+	if !reflect.DeepEqual(data, decoded) {
+		fmt.Printf("Assertion Error: expected %v but got %v", data, decoded)
+	} else {
+		fmt.Println("Assertion Passed!")
+	}
+}
+
 func XOREncode(data []byte) []byte {
 	var result []byte
 	for i := 0; i < len(data); i += 8 {
@@ -155,19 +164,11 @@ func XORDecode(data []byte) []byte {
 		for j := 0; j < 8; j++ {
 			result = append(result, byte((block>>(j*8))&0xff))
 		}
-		for j := 0; j < 8 && i+j-8 >= 0; j++ {
-			result[i+j-8] ^= result[i+j]
+		if i > 0 {
+			for j := 0; j < 8; j++ {
+				result[i+j-8] ^= data[i-8+j]
+			}
 		}
 	}
 	return result
-}
-
-func AssertEqual(data []byte) {
-	encoded := XOREncode(data)
-	decoded := XORDecode(encoded)
-	if !reflect.DeepEqual(data, decoded) {
-		fmt.Printf("Assertion Error: expected %v but got %v", data, decoded)
-	} else {
-		fmt.Println("Assertion Passed!")
-	}
 }

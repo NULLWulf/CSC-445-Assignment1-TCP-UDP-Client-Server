@@ -10,6 +10,7 @@ import (
 
 func main() {
 
+	AssertEqual([]byte("Hello World"))
 	parseProgramArguments()
 	SetupCloseHandler()
 
