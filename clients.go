@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"crypto/rand"
-	"encoding/binary"
 	"fmt"
 	"net"
 	"reflect"
@@ -16,8 +15,8 @@ func measureRtt() {
 
 	for _, size := range sizes {
 		msg := make([]byte, size)
+		_, err := rand.Read(msg)
 		conn, err := net.Dial(Protocol, Address)
-
 		if err != nil {
 			fmt.Println("Error connecting to server:", err)
 			return
@@ -29,11 +28,10 @@ func measureRtt() {
 			}
 		}(conn)
 
-		// encode message
-		msg = XOREncode(msg)
-
 		// send message and measure round-trip time
 		start := time.Now().UnixNano()
+		//fmt.Println(msg)
+
 		_, err = conn.Write(msg)
 		if err != nil {
 			fmt.Println("Error sending message:", err)
@@ -46,17 +44,11 @@ func measureRtt() {
 			return
 		}
 		end := time.Now().UnixNano()
-
-		// decode reply
-		reply = XORDecode(reply)
-
-		// validate reply
-		if !bytes.Equal(msg, reply) {
-			fmt.Printf("Validation failed for size %d\n", size)
-		}
+		fmt.Println(bytes.Equal(msg, reply))
 
 		// store result
 		rttResults[size] = time.Duration(end - start)
+		time.Sleep(1 * time.Second)
 	}
 
 	// print results
@@ -67,6 +59,8 @@ func measureRtt() {
 
 }
 
+// measureThroughput measures the throughput for a given message size and number of messages
+// and returns the throughput in Mbps
 func measureThroughput(msgSize int, numMsgs int) (float64, error) {
 	conn, err := net.Dial(Protocol, Address)
 	if err != nil {
@@ -83,9 +77,6 @@ func measureThroughput(msgSize int, numMsgs int) (float64, error) {
 	msg := make([]byte, msgSize)
 	_, err = rand.Read(msg)
 	ack := make([]byte, 8)
-	binary.LittleEndian.PutUint64(ack, 1)
-
-	msg = XOREncode(msg)
 
 	// send messages and measure throughput
 	start := time.Now().UnixNano()
@@ -109,20 +100,18 @@ func measureThroughput(msgSize int, numMsgs int) (float64, error) {
 	return throughput, nil
 }
 
+// startThroughPutMeasurement starts the throughput measurement for different message sizes and number of messages
+// and calculates the throughput for each combination in Mbps
 func startThroughPutMeasurement() {
-	msgSizes := []int{1024, 512, 128}
-	numMsgs := []int{1024, 2048, 8192}
 
-	for _, size := range msgSizes {
-		for _, num := range numMsgs {
-			throughput, err := measureThroughput(size, num)
-			if err != nil {
-				fmt.Println(err)
-				continue
-			}
-			fmt.Printf("Message size: %d bytes, number of messages: %d, throughput: %.2f Mbps\n", size, num, throughput/1000000)
-		}
-	}
+	throughput, _ := measureThroughput(1024, 1024)
+	fmt.Printf("Message size: %d bytes, number of messages: %d, throughput: %.2f Mbps\n", 1024, 1024, throughput*0.000001)
+
+	throughput, _ = measureThroughput(512, 2048)
+	fmt.Printf("Message size: %d bytes, number of messages: %d, throughput: %.2f Mbps\n", 512, 2048, throughput*0.000001)
+
+	throughput, _ = measureThroughput(128, 8192)
+	fmt.Printf("Message size: %d bytes, number of messages: %d, throughput: %.2f Mbps\n", 128, 8192, throughput*0.000001)
 }
 
 func AssertEqual(data []byte) {
@@ -135,40 +124,14 @@ func AssertEqual(data []byte) {
 	}
 }
 
-func XOREncode(data []byte) []byte {
-	var result []byte
-	for i := 0; i < len(data); i += 8 {
-		var block uint64
-		for j := i; j < i+8 && j < len(data); j++ {
-			block |= uint64(data[j]) << ((j - i) * 8)
-		}
-		for j := 0; j < 8; j++ {
-			result = append(result, byte((block>>(j*8))&0xff))
-		}
+func XOREncode(input []byte) []byte {
+	output := make([]byte, len(input))
+	for i := 0; i < len(input); i++ {
+		output[i] = input[i] ^ Key[i%len(Key)]
 	}
-	for i := 8; i < len(result); i += 8 {
-		for j := 0; j < 8; j++ {
-			result[i+j] ^= result[i+j-8]
-		}
-	}
-	return result
+	return output
 }
 
-func XORDecode(data []byte) []byte {
-	var result []byte
-	for i := len(data) - 8; i >= 0; i -= 8 {
-		var block uint64
-		for j := 0; j < 8; j++ {
-			block |= uint64(data[i+j]) << (j * 8)
-		}
-		for j := 0; j < 8; j++ {
-			result = append(result, byte((block>>(j*8))&0xff))
-		}
-		if i > 0 {
-			for j := 0; j < 8; j++ {
-				result[i+j-8] ^= data[i-8+j]
-			}
-		}
-	}
-	return result
+func XORDecode(input []byte) []byte {
+	return XOREncode(input)
 }

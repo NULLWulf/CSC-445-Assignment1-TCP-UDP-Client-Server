@@ -6,7 +6,6 @@ import (
 )
 
 func handleConnectionUDP(conn *net.UDPConn) {
-	// create message buffer
 	buf := make([]byte, 1024)
 
 	for {
@@ -19,12 +18,9 @@ func handleConnectionUDP(conn *net.UDPConn) {
 
 		// decode message
 		msg := buf[:n]
-		msg = XORDecode(msg)
-		msg = XOREncode(msg)
 
-		fmt.Printf("Received message from %s: %s\n", raddr, msg)
 		// send acknowledgement
-		_, err = conn.WriteToUDP([]byte("ACK"), raddr)
+		_, err = conn.WriteToUDP(msg, raddr)
 		if err != nil {
 			fmt.Println("Error sending acknowledgement:", err)
 			continue
@@ -33,7 +29,7 @@ func handleConnectionUDP(conn *net.UDPConn) {
 }
 
 func startUDPServer() {
-	addr := &net.UDPAddr{IP: net.IPv4zero, Port: 12530}
+	addr := &net.UDPAddr{IP: net.IPv4zero, Port: Port}
 	conn, err := net.ListenUDP("udp", addr)
 	if err != nil {
 		fmt.Println("Error starting server:", err)

@@ -8,22 +8,16 @@ import (
 	//"os/signal"
 )
 
+var Key = []byte("d20a944716d86ef0")
+
 func main() {
 
 	AssertEqual([]byte("Hello World"))
 	parseProgramArguments()
 	SetupCloseHandler()
-
-	if Mode == "s" {
-
-	}
-
-	if Mode == "c" {
-
-	}
-	os.Exit(-5)
+	runProgram()
+	os.Exit(0)
 }
-
 func SetupCloseHandler() {
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
