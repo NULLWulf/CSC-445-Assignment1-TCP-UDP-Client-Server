@@ -1,19 +1,18 @@
 package main
 
 func runProgram() {
-
 	switch Mode {
-	case "s":
+	case "server":
 		switch Protocol {
-		case "t":
+		case "tcp":
 			startTCPServer()
 			break
-		case "u":
+		case "udp":
 			startUDPServer()
 			break
 		}
 		break
-	case "c":
+	case "client":
 		measureRtt()
 		startThroughPutMeasurement()
 		break

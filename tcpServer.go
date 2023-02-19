@@ -1,10 +1,12 @@
 package main
 
 import (
+	"crypto/rand"
 	"log"
 	"net"
 )
 
+// handleTCPConnection Handles a single TCP or UDP connection connection
 func handleTCPConnection(conn net.Conn) {
 	defer func() {
 		if err := conn.Close(); err != nil {
@@ -12,9 +14,10 @@ func handleTCPConnection(conn net.Conn) {
 		}
 	}()
 
-	buffer := make([]byte, 1024)
+	buf := make([]byte, 1024)
+	// Continuously listens for incoming messages from connected client.
 	for {
-		n, err := conn.Read(buffer)
+		n, err := conn.Read(buf)
 		if err != nil {
 			switch err {
 			case net.ErrClosed:
@@ -25,15 +28,23 @@ func handleTCPConnection(conn net.Conn) {
 			return
 		}
 
+		// decode message
+		msg := buf[:n]
 		log.Printf("Received message from %s: %d bytes", conn.RemoteAddr(), n)
+		if Throughput {
+			msg = make([]byte, 8)
+			_, err = rand.Read(msg)
+		}
 
-		if _, err := conn.Write(buffer[:n]); err != nil {
+		if _, err := conn.Write(buf); err != nil {
 			log.Printf("Error writing: %v\n", err)
 			return
 		}
 	}
 }
 
+// startTCP server, starts a TCP server and binds it to the globally
+// specified port.
 func startTCPServer() {
 	addr := &net.TCPAddr{IP: net.IPv4zero, Port: Port}
 	ln, err := net.ListenTCP("tcp", addr)
@@ -47,7 +58,6 @@ func startTCPServer() {
 	}()
 
 	log.Printf("Server listening on: %s\n", addr)
-
 	for {
 		conn, err := ln.Accept()
 		if err != nil {

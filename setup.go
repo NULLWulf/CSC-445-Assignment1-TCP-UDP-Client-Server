@@ -2,45 +2,47 @@ package main
 
 import (
 	"flag"
-	"fmt"
+	"log"
 	"os"
 )
 
 var (
-	Address  string
-	Mode     string
-	Protocol string
-	Port     int
+	Address    string
+	Mode       string
+	Protocol   string
+	Port       int
+	Throughput bool
 )
 
+// parseProgramArguments parses the command line arguments and sets the global variables based on them
+// if configuration is valid the program will continue, otherwise it will exit with an error code
 func parseProgramArguments() {
-	// Get command line arguments and parse them
 	Key = []byte("d20a944716d86ef0")
-	flag.StringVar(&Mode, "Mode", "", "Application Mode: Server (s) or Client (c)")
-	flag.StringVar(&Address, "Address", "", "Host Address to connect to or host Address to instantiate.")
-	flag.StringVar(&Protocol, "Protocol", "", "Protocol to use: TCP (t) or UDP (u).")
-	flag.IntVar(&Port, "Port", 0, "Port to listen on or seek on destination host.")
+	flag.StringVar(&Mode, "Mode", "", "Application mode: 'server' or client'.")
+	flag.StringVar(&Address, "Address", "", "Remote address to connect to while in Client mode, this field is ignored when set in server mode.")
+	flag.StringVar(&Protocol, "Protocol", "", "Application Protocol Mode: 'udp' or 'tcp'.")
+	flag.IntVar(&Port, "Port", 7500, "Port the application will listen to while in server mode.")
+	flag.BoolVar(&Throughput, "Throughput", false, "Specify throughput explicitly to send 8 byte acks back")
 	flag.Parse()
 
-	if Address == "" {
-		if Mode == "s" {
-			fmt.Println("No Localhost Address Set for Server Mode, defaulting to 0.0.0.0")
-			Address = "0.0.0.0"
-		} else {
-			fmt.Println("Error:  Application Set to Client Mode with Destination Host Address. Application Terminating")
-			os.Exit(-4)
-		}
-	}
-	if Protocol == "" {
-		fmt.Println("No default Protocol specified.  Starting with TCP")
-		Protocol = "tcp"
+	if Mode != "server" && Mode != "client" {
+		log.Fatalf("Invalid Mode.  Must be either 'server' or 'client'.")
 	}
 
-	if Port == 0 {
-		defPort := 6780
-		if Mode == "s" {
-			fmt.Println("App set to server Mode with no Port to listener, setting to default Port of : ", defPort)
-		}
-		Port = defPort
+	if Mode == "server" && Address != "" {
+		log.Println("Warning: Address argument is ignored when application set to server mode.")
+	}
+
+	if Mode == "client" && Address == "" {
+		log.Fatalf("Invalid Address.  Address must be specified for client mode.")
+	}
+
+	if Protocol != "tcp" && Protocol != "udp" {
+		log.Print("Invalid Protocol.  Must be either 'tcp' or 'udp'.")
+		os.Exit(-5)
+	}
+
+	if Throughput {
+		log.Printf("Application seto throughput mode.  Will return 8 byte acks.")
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/rand"
 	"fmt"
+	"log"
 	"net"
 	"reflect"
 	"time"
@@ -18,33 +19,33 @@ func measureRtt() {
 		_, err := rand.Read(msg)
 		conn, err := net.Dial(Protocol, Address)
 		if err != nil {
-			fmt.Println("Error connecting to server:", err)
+			log.Println("Error connecting to server: ", err)
 			return
 		}
 		defer func(conn net.Conn) {
 			err := conn.Close()
 			if err != nil {
-
+				log.Println("Error closing connection:", err)
 			}
 		}(conn)
 
 		// send message and measure round-trip time
 		start := time.Now().UnixNano()
-		//fmt.Println(msg)
+		//log.Println(msg)
 
 		_, err = conn.Write(msg)
 		if err != nil {
-			fmt.Println("Error sending message:", err)
+			log.Println("Error sending message:", err)
 			return
 		}
 		reply := make([]byte, size)
 		_, err = conn.Read(reply)
 		if err != nil {
-			fmt.Println("Error receiving reply:", err)
+			log.Println("Error receiving reply:", err)
 			return
 		}
 		end := time.Now().UnixNano()
-		fmt.Println(bytes.Equal(msg, reply))
+		log.Println(bytes.Equal(msg, reply))
 
 		// store result
 		rttResults[size] = time.Duration(end - start)
@@ -52,7 +53,7 @@ func measureRtt() {
 	}
 
 	// print results
-	fmt.Println("Round-trip times:")
+	log.Println("Round-trip times:")
 	for size, rtt := range rttResults {
 		fmt.Printf("%d bytes: %v\n", size, rtt)
 	}
@@ -69,7 +70,7 @@ func measureThroughput(msgSize int, numMsgs int) (float64, error) {
 	defer func(conn net.Conn) {
 		err := conn.Close()
 		if err != nil {
-			fmt.Println("Error closing connection:", err)
+			log.Println("Error closing connection:", err)
 		}
 	}(conn)
 
@@ -120,7 +121,7 @@ func AssertEqual(data []byte) {
 	if !reflect.DeepEqual(data, decoded) {
 		fmt.Printf("Assertion Error: expected %v but got %v", data, decoded)
 	} else {
-		fmt.Println("Assertion Passed!")
+		log.Println("Assertion Passed!")
 	}
 }
 

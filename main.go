@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -11,19 +11,19 @@ import (
 var Key = []byte("d20a944716d86ef0")
 
 func main() {
-
-	AssertEqual([]byte("Hello World"))
 	parseProgramArguments()
-	SetupCloseHandler()
+	setupCloseHandler()
 	runProgram()
 	os.Exit(0)
 }
-func SetupCloseHandler() {
+
+// SetupCloseHandler handles the Ctrl+C event and exits gracefully
+func setupCloseHandler() {
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	go func() {
 		<-c
-		fmt.Println("\r- Ctrl+C pressed in Terminal")
+		log.Println("\r- Ctrl+C pressed in Terminal.  Exiting gracefully")
 		os.Exit(0)
 	}()
 }
