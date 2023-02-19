@@ -30,7 +30,7 @@ func handleTCPConnection(conn net.Conn) {
 
 		// decode message
 		msg := buf[:n]
-		log.Printf("Received message from %s: %d bytes", conn.RemoteAddr(), n)
+		//log.Printf("Received message from %s: %d bytes", conn.RemoteAddr(), n)
 		if Throughput {
 			msg = make([]byte, 8)
 			_, err = rand.Read(msg)

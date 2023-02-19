@@ -14,10 +14,11 @@ var (
 	Throughput bool
 )
 
+var Key = []byte("d20a944716d86ef0")
+
 // parseProgramArguments parses the command line arguments and sets the global variables based on them
 // if configuration is valid the program will continue, otherwise it will exit with an error code
 func parseProgramArguments() {
-	Key = []byte("d20a944716d86ef0")
 	flag.StringVar(&Mode, "Mode", "", "Application mode: 'server' or client'.")
 	flag.StringVar(&Address, "Address", "", "Remote address to connect to while in Client mode, this field is ignored when set in server mode.")
 	flag.StringVar(&Protocol, "Protocol", "", "Application Protocol Mode: 'udp' or 'tcp'.")

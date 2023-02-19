@@ -8,8 +8,6 @@ import (
 	//"os/signal"
 )
 
-var Key = []byte("d20a944716d86ef0")
-
 func main() {
 	parseProgramArguments()
 	setupCloseHandler()

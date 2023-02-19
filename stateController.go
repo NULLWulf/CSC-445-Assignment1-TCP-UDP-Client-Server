@@ -13,8 +13,11 @@ func runProgram() {
 		}
 		break
 	case "client":
-		measureRtt()
-		startThroughPutMeasurement()
+		if Throughput {
+			startThroughPutMeasurement()
+		} else {
+			measureRtt()
+		}
 		break
 	}
 }

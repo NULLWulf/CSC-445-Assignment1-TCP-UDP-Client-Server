@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"crypto/rand"
 	"fmt"
 	"log"
@@ -45,7 +44,6 @@ func measureRtt() {
 			return
 		}
 		end := time.Now().UnixNano()
-		log.Println(bytes.Equal(msg, reply))
 
 		// store result
 		rttResults[size] = time.Duration(end - start)
