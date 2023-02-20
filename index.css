@@ -1,5 +1,5 @@
 p {
-  width: 70%;
+  width: 60%;
 }
 
 ul,
@@ -7,6 +7,7 @@ li {
   width: 70%;
 }
 
-canvas {
+canvas,
+img {
   width: 50%;
 }
