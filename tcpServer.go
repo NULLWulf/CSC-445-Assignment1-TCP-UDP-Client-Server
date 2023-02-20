@@ -27,10 +27,10 @@ func handleTCPConnection(conn net.Conn) {
 			}
 			return
 		}
-
-		// decode message
 		msg := buf[:n]
-		//log.Printf("Received message from %s: %d bytes", conn.RemoteAddr(), n)
+		msg = XORDecode(msg)
+		msg = XOREncode(msg)
+		log.Printf("Received message from %s: %d bytes", conn.RemoteAddr(), n)
 		if Throughput {
 			msg = make([]byte, 8)
 			_, err = rand.Read(msg)

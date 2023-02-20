@@ -14,7 +14,7 @@ var (
 	Throughput bool
 )
 
-var Key = []byte("d20a944716d86ef0")
+var Key = []byte("d58f0d8a7ed6d988")
 
 // parseProgramArguments parses the command line arguments and sets the global variables based on them
 // if configuration is valid the program will continue, otherwise it will exit with an error code

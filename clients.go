@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"reflect"
 	"time"
 )
 
 func measureRtt() {
+
 	sizes := []int{8, 32, 512, 1024}
 	rttResults := make(map[int]time.Duration)
 
@@ -28,10 +28,9 @@ func measureRtt() {
 			}
 		}(conn)
 
+		msg = XOREncode(msg)
 		// send message and measure round-trip time
 		start := time.Now().UnixNano()
-		//log.Println(msg)
-
 		_, err = conn.Write(msg)
 		if err != nil {
 			log.Println("Error sending message:", err)
@@ -111,16 +110,6 @@ func startThroughPutMeasurement() {
 
 	throughput, _ = measureThroughput(128, 8192)
 	fmt.Printf("Message size: %d bytes, number of messages: %d, throughput: %.2f Mbps\n", 128, 8192, throughput*0.000001)
-}
-
-func AssertEqual(data []byte) {
-	encoded := XOREncode(data)
-	decoded := XORDecode(encoded)
-	if !reflect.DeepEqual(data, decoded) {
-		fmt.Printf("Assertion Error: expected %v but got %v", data, decoded)
-	} else {
-		log.Println("Assertion Passed!")
-	}
 }
 
 func XOREncode(input []byte) []byte {
