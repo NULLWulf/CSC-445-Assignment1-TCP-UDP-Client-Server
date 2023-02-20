@@ -41,9 +41,9 @@
     </p>
     <ul>
       <li>
-        <b>Pi to Moxie:</b> These are both school servers that exist on the SUNY
-        Oswego campus. In this instance I pushed my program to the respective
-        machines and launched them in their respective states.
+        <b>Pi to Moxie: </b> These are both school servers that exist on the
+        SUNY Oswego campus. In this instance I pushed my program to the
+        respective machines and launched them in their respective states.
       </li>
       <li>
         <b>Personal Laptop to PI over Wireless: </b> In this case I was able to
@@ -250,14 +250,128 @@
       var laptopPiRTTCtx = document
         .getElementById("wirelessRTTCtx")
         .getContext("2d");
-      var rttPiMoxieTCP = [261, 286, 368, 335];
-      var rttPiMoxieUDP = [496, 402, 429, 419];
+      var rttWirelessTCP = [4.88, 3.18, 4.16, 6.12];
+      var rttWirelessUDP = [3.58, 4.15, 4.38, 4.77];
+      var wiredRttChart = new Chart(laptopPiRTTCtx, {
+        type: "bar",
+        data: {
+          labels: ["8 Bytes", "32 Bytes", "512 Bytes", "1024 Bytes"],
+          datasets: [
+            {
+              label: "Laptop (Wireless) -> Pi TCP",
+              data: rttWirelessTCP,
+              backgroundColor: "rgba(255, 99, 132, 0.5)",
+              borderColor: "rgba(255, 99, 132, 1)",
+              borderWidth: 1,
+            },
+            {
+              label: "Laptop (Wireless) -> Pi UDP",
+              data: rttWirelessUDP,
+              backgroundColor: "rgba(54, 162, 235, 0.5)",
+              borderColor: "rgba(54, 162, 235, 1)",
+              borderWidth: 1,
+            },
+          ],
+        },
+        options: {
+          responsive: false,
+          legend: {
+            position: "top",
+          },
+          title: {
+            display: true,
+            text: "RTT (in microseconds)",
+          },
+          scales: {
+            yAxes: [
+              {
+                scaleLabel: {
+                  display: true,
+                  labelString: "RTT (in microseconds)",
+                  color: "rgba(255, 99, 132, 1)",
+                },
+                ticks: {
+                  beginAtZero: true,
+                },
+              },
+            ],
+            xAxes: [
+              {
+                scaleLabel: {
+                  display: true,
+                  labelString: "Packet Size",
+                  color: "rgba(255, 99, 132, 1)",
+                },
+              },
+            ],
+          },
+        },
+      });
 
       var laptopPiThroughputCtx = document
         .getElementById("wirelessTHroughputCTX")
         .getContext("2d");
-      var rttPiMoxieTCP = [261, 286, 368];
-      var rttPiMoxieUDP = [496, 402, 429];
+      var rttPiMoxieTCP = [46.73, 38.52, 195.4];
+      var rttPiMoxieUDP = [2.93, 1.49, 0.7];
+      var wiredThroughputChart = new Chart(laptopPiThroughputCtx, {
+        type: "bar",
+        data: {
+          labels: [
+            "1024 1024 Byte Msgs",
+            "2048 512 Byte Msgs",
+            "8192 128 Byte Msgs",
+          ],
+          datasets: [
+            {
+              label: "Laptop (Wireless) -> Pi TCP",
+              data: throughPiMoxieTCP,
+              backgroundColor: "rgba(255, 99, 132, 0.5)",
+              borderColor: "rgba(255, 99, 132, 1)",
+              borderWidth: 1,
+            },
+            {
+              label: "Laptop (Wireless) -> Pi UDP",
+              data: throughPiMoxieUDP,
+              backgroundColor: "rgba(54, 162, 235, 0.5)",
+              borderColor: "rgba(54, 162, 235, 1)",
+              borderWidth: 1,
+            },
+          ],
+        },
+        options: {
+          responsive: false,
+          legend: {
+            position: "top",
+          },
+          title: {
+            display: true,
+            text: "Throughput (in Mbps)",
+          },
+          scales: {
+            yAxes: [
+              {
+                scaleLabel: {
+                  display: true,
+                  labelString: "Throughput (in Mbps)",
+                  color: "rgba(255, 99, 132, 1)",
+                },
+                ticks: {
+                  beginAtZero: true,
+                },
+              },
+            ],
+            xAxes: [
+              {
+                scaleLabel: {
+                  display: true,
+                  labelString: "Messages x Size in Bytes",
+                  color: "rgba(255, 99, 132, 1)",
+                },
+              },
+            ],
+          },
+        },
+      });
     </script>
   </body>
 </html>
