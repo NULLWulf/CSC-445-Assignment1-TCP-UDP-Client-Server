@@ -46,6 +46,7 @@
           SUNY Oswego campus. In this instance I pushed my program to the
           respective machines and launched them in their respective states.
         </li>
+        445
         <li>
           <b>Personal Laptop to PI over Wireless: </b> In this case I was able
           to successfully connect to the aforementioned Pi server acting as a
@@ -65,6 +66,12 @@
           exist in the cloud in which Amazon handles the security and hardware
           management of said servers. Notice that performance on these networks
           are are generally speaking better off then the other two connections.
+          I also attempted to connect with my program from home to the EC2
+          instance, however was unsuccessful. It is possible that I did not have
+          the open ports open on my laptop to do so, however AWS does provide
+          the means to open whatever ports you need to the world wide web. None
+          the less testing the program internally within AWS was an interesting
+          experiment.
         </li>
       </ul>
       <p>
@@ -94,6 +101,10 @@
 
     <div class="sec">
       <h2>Program Output</h2>
+      <p>
+        Note that the demos below were conducted on my local machine with the
+        client and sever communicating with each through loopback.
+      </p>
       <h3>TCP RTT</h3>
       <img src="imgs/tcpRTT.png" alt="TCP RTT" />
       <h3>TCP Throughput</h3>
