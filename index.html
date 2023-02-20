@@ -20,25 +20,25 @@
             labels: ['8 Bytes', '32 Bytes', '512 Bytes', '1024 Bytes'],
             datasets: [{
                 label: 'Laptop -> Pi (Wireless) TCP',
-                data: tcpData,
+                data: rttLaptopPiTCP,
                 backgroundColor: 'rgba(255, 99, 132, 0.5)',
                 borderColor: 'rgba(255, 99, 132, 1)',
                 borderWidth: 1
             }, {
                 label: 'Laptop -> Pi (Wireless) UDP',
-                data: udpData,
+                data: rttLaptopPiUDP,
                 backgroundColor: 'rgba(54, 162, 235, 0.5)',
                 borderColor: 'rgba(54, 162, 235, 1)',
                 borderWidth: 1
             }, {
                 label: 'Pi -> Moxie TCP',
-                data: tcpSubnetData,
+                data: rttMoxiePiTCP,
                 backgroundColor: 'rgba(255, 206, 86, 0.5)',
                 borderColor: 'rgba(255, 206, 86, 1)',
                 borderWidth: 1
             }, {
                 label: 'Pi -> Moxie UDP',
-                data: udpSubnetData,
+                data: rttMoxiePiUDP,
                 backgroundColor: 'rgba(75, 192, 192, 0.5)',
                 borderColor: 'rgba(75, 192, 192, 1)',
                 borderWidth: 1
