@@ -12,44 +12,43 @@
     <p>
       The purpose of this assignment was to create a TCP and UDP client that
       connects to a respective server and sends and receives a series packets.
-      With that were four main use cases to account for.
+      With that were four main use cases to account for:
     </p>
     <ul>
       <li>
-        1. TCP: Sending and Receiving packets of 8, 32, 512, 1024 Bytes and
+        <b>TCP:</b> Sending and Receiving packets of 8, 32, 512, 1024 Bytes and
         measuring the Round Trip Time.
       </li>
       <li>
-        2. UDP: Sending and Receiving packets of 8, 32, 512, 1024 Bytes and
+        <b>UDP:</b> Sending and Receiving packets of 8, 32, 512, 1024 Bytes and
         measuring the Round Trip Time.
       </li>
       <li>
-        3. TCP: Sending and Receiving combinations of 1024 1024 Byte Messages,
-        2048 512 Byte Messages, and 8192 128 Byte Messages to measure
+        <b>TCP:</b> Sending and Receiving combinations of 1024 1024 Byte
+        Messages, 2048 512 Byte Messages, and 8192 128 Byte Messages to measure
         throughput.
       </li>
       <li>
-        4. UDP: Sending and Receiving combinations of 1024 1024 Byte Messages,
-        2048 512 Byte Messages, and 8192 128 Byte Messages to measure
+        <b>UDP:</b> Sending and Receiving combinations of 1024 1024 Byte
+        Messages, 2048 512 Byte Messages, and 8192 128 Byte Messages to measure
         throughput.
       </li>
     </ul>
     <p>
       Additionally it was required to test 3 different pairs of machines across
-      two different networks.  The machines and networks are described as followed:
+      two different networks. The machines and networks are described as
+      followed:
     </p>
     <ul>
       <li>
         <b>Pi to Moxie:</b> These are both school servers that exist on the SUNY
-        Oswego campus. In this instance I SSH copied a copy of my program to the
-        respective machines and conducted my tests by launching the program and
-        testing in the various states. In this case PI was the client and Moxie
-        was the host in all instances.
+        Oswego campus. In this instance I pushed my program to the respective
+        machines and launched them in their respective states.
       </li>
       <li>
         <b>Personal Laptop to PI over Wireless: </b> In this case I was able to
-        successfully connect to the aforementioned Pi server acting as a server in
-        this instance whilst connected to SUNY Oswego's WLAN. (Wireless Local
+        successfully connect to the aforementioned Pi server acting as a server
+        in this instance whilst connected to SUNY Oswego's WLAN. (Wireless Local
         Area Network). It is worth mentioning that I initially attempted to
         connect with my sever from home, however I was unable to. This is is
         sensible since it would not be security minded to arbitrarily have the
@@ -57,24 +56,24 @@
         network performance was much inferior to wired connections.
       </li>
       <li>
-        <b>Amazon Web Service EC2 Instance A to EC2 Instance B: </b>Similarly
-        to Pi to Moxie I pushed my application to these respective servers. In
-        this case I set up an EC2 instance on the same subnet within an Amazon
-        Web Service Virtual Private Cloud network. These are machines that exist
-        in the cloud in which Amazon handles the security and hardware
-        management of said servers. Notice that performance on these networks
-        are exceptional.
+        <b>Amazon Web Service EC2 Instance A to EC2 Instance B: </b>Similarly to
+        Pi to Moxie I pushed my application to these respective servers. In this
+        case I set up an EC2 instance on the same subnet within an Amazon Web
+        Service Virtual Private Cloud network. These are machines that exist in
+        the cloud in which Amazon handles the security and hardware management
+        of said servers. Notice that performance on these networks are are
+        generally speaking better off then the other two connections.
       </li>
     </ul>
     <p>
-      This assignment involved making use of the Golang standard "net" package
-      for the purpose of creating TCP and UDP sockets. Additionally, the "time"
-      package was used to measure the time it took to send and receive packets
-      and the "flag" package was used to parse command line arguments to easily
-      specify the programs state when launching it in client or server mode
-      across different servers.<br />Golang's modern approach to concurrency,
-      and it's inherent idiomatic nature made it a great choice for this
-      assignment and a good choice for network programming in general.
+      In the program I made use of the Golang standard "net" package for the
+      purpose of creating TCP and UDP sockets. Additionally, the "time" package
+      was used to measure the time it took to send and receive packets and the
+      "flag" package was used to parse command line arguments to easily specify
+      the programs state when launching it in client or server mode across
+      different servers. Golang's modern approach to concurrency, and it's
+      inherent idiomatic nature made it a great choice for this assignment and a
+      good choice for network programming in general.
     </p>
 
     <h2>Results</h2>
@@ -85,7 +84,9 @@
     <canvas id="wiredThroughputCtx"></canvas>
     <h3>Wireless Connections</h3>
     <h4>Round Trip Time (in microseconds)</h4>
+    <canvas id="wirelessRTTCtx"></canvas>
     <h4>Throughput (in Mbps)</h4>
+    <canvas id="wirelessTHroughputCTX"></canvas>
 
     <script>
       var wiredRttCtx = document.getElementById("wiredRttCtx").getContext("2d");
@@ -245,6 +246,18 @@
           },
         },
       });
+
+      var laptopPiRTTCtx = document
+        .getElementById("wirelessRTTCtx")
+        .getContext("2d");
+      var rttPiMoxieTCP = [261, 286, 368, 335];
+      var rttPiMoxieUDP = [496, 402, 429, 419];
+
+      var laptopPiThroughputCtx = document
+        .getElementById("wirelessTHroughputCTX")
+        .getContext("2d");
+      var rttPiMoxieTCP = [261, 286, 368];
+      var rttPiMoxieUDP = [496, 402, 429];
     </script>
   </body>
 </html>
