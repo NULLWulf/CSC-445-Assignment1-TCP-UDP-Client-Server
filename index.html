@@ -6,9 +6,27 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-<h1>CSC445: Assignment 1 - Developing TCP/UDP Client to Measure Network Performance</h1>
+<h1>CSC445: Assignment 1 - Measuring Network Performance</h1>
 <h2>Nathaniel Wolf</h2>
-<canvas id="myChart"></canvas>
+<p>The purpose of this assignment was to create a TCP and UDP client that connects to a respective server and sends and receives a series packets.
+    With that were four main use cases to account for.</p>
+<ul>
+    <li>1. TCP:  Sending and Receiving packets of 8, 32, 512, 1024 Bytes and measuring the Round Trip Time</li>
+    <li>2. UDP:  Sending and Receiving packets of 8, 32, 512, 1024 Bytes and measuring the Round Trip Time</li>
+    <li>3. TCP:  Sending and Receiving combinations of 1024 1024 Byte Messages, 2048 512 Byte Messages, and 8192 128 Byte Messages to measure throughput.</li>
+    <li>4. UDP:  Sending and Receiving combinations of 1024 1024 Byte Messages, 2048 512 Byte Messages, and 8192 128 Byte Messages to measure throughput.</li>
+</ul>
+<p>
+    This assignment involved making use of the Golang standard "net" package for the purpose of creating TCP and UDP sockets.  Additionally, the "time" package was used to measure the time it took to send and receive packets
+    and the "flag" package was used to parse command line arguments to easily specify the programs state when launching it in client or server mode across different servers.  Golang's modern approach to concurrency and it's
+    inherent idiomatic nature made it a great choice for this assignment and a good choice for network programming in general.
+    <br>
+</p>
+
+<h2>Results</h2>
+<h3>Wired Connections</h3>
+<h2>Round Trip Time (in microseconds)</h2>>
+<canvas id="myChart" width=1000></canvas>
 <script>
     var ctx = document.getElementById('myChart').getContext('2d');
     var rttLaptopPiTCP = [261, 286, 368, 335];
@@ -47,7 +65,7 @@
             }]
         },
         options: {
-            responsive: true,
+            responsive: false,
             legend: {
                 position: 'top',
             },
@@ -59,7 +77,8 @@
                 yAxes: [{
                     scaleLabel: {
                         display: true,
-                        labelString: 'Latency (microseconds)'
+                        labelString: 'Latency (microseconds)',
+                        color: 'rgba(255, 99, 132, 1)'
                     },
                     ticks: {
                         beginAtZero: true
@@ -68,7 +87,8 @@
                 xAxes: [{
                     scaleLabel: {
                         display: true,
-                        labelString: 'Packet Size'
+                        labelString: 'Packet Size',
+                        color: 'rgba(255, 99, 132, 1)'
                     }
                 }]
             }
