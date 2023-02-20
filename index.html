@@ -3,10 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-<h1>
-    Test
-</h1>
+<canvas id="myChart"></canvas>
+<script>
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var rttLaptopPiTCP = [261, 286, 368, 335];
+    var rttLaptopPiUDP = [496, 402, 429, 419];
+    var rttMoxiePiTCP = [557, 524, 511, 547];
+    var rttMoxiePiUDP = [582, 576, 609, 719];
+
+    var chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['8 Bytes', '32 Bytes', '512 Bytes', '1024 Bytes'],
+            datasets: [{
+                label: 'Laptop -> Pi (Wireless) TCP',
+                data: tcpData,
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }, {
+                label: 'Laptop -> Pi (Wireless) UDP',
+                data: udpData,
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }, {
+                label: 'Pi -> Moxie TCP',
+                data: tcpSubnetData,
+                backgroundColor: 'rgba(255, 206, 86, 0.5)',
+                borderColor: 'rgba(255, 206, 86, 1)',
+                borderWidth: 1
+            }, {
+                label: 'Pi -> Moxie UDP',
+                data: udpSubnetData,
+                backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            legend: {
+                position: 'top',
+            },
+            title: {
+                display: true,
+                text: 'RTT (in microseconds)'
+            },
+            scales: {
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Latency (microseconds)'
+                    },
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }],
+                xAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Packet Size'
+                    }
+                }]
+            }
+        }
+    });
+</script>
 </body>
 </html>
